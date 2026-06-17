@@ -10,23 +10,41 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   
 jobs:
-  # This workflow contains a single job called "build"
-  comment-with-action:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
-    steps:
+   comment-with-action:
+      # The type of runner that the job will run on
+      runs-on: ubuntu-latest
+      steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - name: "dump githb context"
-        run: echo '${{ toJson(github.event) }}' | jq
-        shell: bash
-      - name: Create comment
-        uses: peter-evans/create-or-update-comment@v5
-        with:
-          issue-number: ${{ github.event.issue.number }}
-          body: |
-            This is a multi-line test comment
-            - With GitHub **Markdown** :sparkles:
-            - Created by [create-or-update-comment][1]
+        - name: "dump githb context"
+          run: echo '${{ toJson(github.event) }}' | jq
+          shell: bash
+        - name: Create comment
+          uses: peter-evans/create-or-update-comment@v5
+          with:
+            issue-number: ${{ github.event.issue.number }}
+            body: |
+              This is a multi-line test comment
+              - With GitHub **Markdown** :sparkles:
+              - Created by [create-or-update-comment][1]
 
-            [1]: https://github.com/peter-evans/create-or-update-comment
-          reactions: '+1'
+              [1]: https://github.com/peter-evans/create-or-update-comment
+              reactions: '+1'
+          
+    comment-with-api:
+      runs-on: ubuntu-latest
+      steps: 
+        - name: create  comment with API
+        run:  |
+          gh api -X POST \
+            http://api.github.com/${ORGANIZATION}/{REPOSITORY}/issues/${ISSUE_NUMBER/comments \
+            -f body='
+            Comment but from the APi call no action
+            ' 
+        env:
+          GITHUB_TOKEN: $ {{ secrets.GITHUB_TOKEN }}
+          ORGANIZATION: $ {{ github.event.organization.login }}
+          REPOSITOERY: $ {{ github.event.repository.name }}
+          ISSUE_NUMER: $ {{ github.event.issue.number }}
+            }
+        
+          
